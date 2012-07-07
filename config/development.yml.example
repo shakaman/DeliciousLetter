@@ -1,0 +1,14 @@
+:delicious:
+  :username: ''
+  :password: ''
+
+:email:
+  :to_email: ''
+  :from_name: ''
+  :from_email: ''
+
+:smtp:
+  :domain: 'domain'
+  :login: 'login@domain.com'
+  :password: 'password'
+

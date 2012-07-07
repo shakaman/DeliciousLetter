@@ -1,0 +1,26 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    chronic (0.6.7)
+    i18n (0.6.0)
+    mail (2.4.4)
+      i18n (>= 0.4.0)
+      mime-types (~> 1.16)
+      treetop (~> 1.4.8)
+    mime-types (1.19)
+    nokogiri (1.5.5)
+    polyglot (0.3.3)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
+    treetop (1.4.10)
+      polyglot
+      polyglot (>= 0.3.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  chronic
+  mail
+  nokogiri
+  rest-client (~> 1.6)
