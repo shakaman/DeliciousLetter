@@ -7,6 +7,8 @@ require 'nokogiri'
 require 'chronic'
 require 'net/smtp'
 
+require 'plugins/github'
+
 module DeliciousLetter
   @@config = nil
   @@env    = 'development'
@@ -93,8 +95,17 @@ module DeliciousLetter
       email_html = ''
 
       posts.each{ |post|
-        email_text += "#{post.attributes['description'].text} : link\n"
-        email_html += "<li><a href='#{post.attributes['href'].text}'>#{post.attributes['description'].text}</a></li>"
+        github = DeliciousLetter::Github.new
+
+        if github.isGithub(post.attributes['href'].text)
+          github = github.fetchDetails(post.attributes['href'].text)
+
+          email_text += "#{github['name']}:\n#{github['description']}\nlink\n"
+          email_html += "<h3 style='margin: 15px 0 0 0; font: bold 14px/16px Helvetica; color: #000;'><a style='color: #000;' href='#{post.attributes['href'].text}'>#{github['name']}</a></h3><p style='margin: 0; font: normal 12px/14px Helvetica; color: #000;'>#{github['description']}</p>"
+        else
+          email_text += "#{post.attributes['description'].text} : #{post.attributes['href'].text} \n"
+          email_html += "<h3 style='margin: 15px 0 0 0; font: bold 14px/16px Helvetica; color: #000;'><a style='color: #000;' href='#{post.attributes['href'].text}'>#{post.attributes['description'].text}</a></h3>"
+        end
       }
 
       message = <<MESSAGE_END
@@ -104,7 +115,7 @@ MIME-Version: 1.0
 Content-type: text/html
 Subject: Mr Porte vous propose cette semaine
 
-<h1>Mr Porte vous propose cette semaine</h1><ul>#{email_html}</ul>
+<h1 style="font: bold 20px/30px 'Helvetica'; color: #000;">Mr Porte vous propose cette semaine</h1>#{email_html}
 MESSAGE_END
 
       smtp = Net::SMTP.new 'smtp.gmail.com', 587

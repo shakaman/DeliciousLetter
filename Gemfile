@@ -8,3 +8,5 @@ gem 'nokogiri'
 
 # Helpers for date
 gem 'chronic'
+
+gem 'yajl-ruby',        '~>1.1'

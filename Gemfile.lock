@@ -6,6 +6,7 @@ GEM
     nokogiri (1.5.5)
     rest-client (1.6.7)
       mime-types (>= 1.16)
+    yajl-ruby (1.1.0)
 
 PLATFORMS
   ruby
@@ -14,3 +15,4 @@ DEPENDENCIES
   chronic
   nokogiri
   rest-client (~> 1.6)
+  yajl-ruby (~> 1.1)

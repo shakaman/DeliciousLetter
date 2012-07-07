@@ -11,4 +11,6 @@
   :domain: 'domain'
   :login: 'login@domain.com'
   :password: 'password'
+  :server: 'smtp.gmail.com'
+  :port: 587
 
