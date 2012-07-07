@@ -8,6 +8,7 @@ require 'chronic'
 require 'net/smtp'
 
 require 'plugins/github'
+require 'plugins/twitter'
 
 module DeliciousLetter
   @@config = nil
@@ -96,12 +97,17 @@ module DeliciousLetter
 
       posts.each{ |post|
         github = DeliciousLetter::Github.new
+        twitter = DeliciousLetter::Twitter.new
 
         if github.isGithub(post.attributes['href'].text)
           github = github.fetchDetails(post.attributes['href'].text)
+          email_text += github['text']
+          email_html += github['html']
 
-          email_text += "#{github['name']}:\n#{github['description']}\nlink\n"
-          email_html += "<h3 style='margin: 15px 0 0 0; font: bold 14px/16px Helvetica; color: #000;'><a style='color: #000;' href='#{post.attributes['href'].text}'>#{github['name']}</a></h3><p style='margin: 0; font: normal 12px/14px Helvetica; color: #000;'>#{github['description']}</p>"
+        elsif twitter.isTwitter(post.attributes['href'].text)
+          tweet = twitter.fetchDetails(post.attributes['href'].text)
+          email_text += tweet['text']
+          email_html += tweet['html']
         else
           email_text += "#{post.attributes['description'].text} : #{post.attributes['href'].text} \n"
           email_html += "<h3 style='margin: 15px 0 0 0; font: bold 14px/16px Helvetica; color: #000;'><a style='color: #000;' href='#{post.attributes['href'].text}'>#{post.attributes['description'].text}</a></h3>"
