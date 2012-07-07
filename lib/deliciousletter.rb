@@ -85,10 +85,10 @@ module DeliciousLetter
 
     def orderLinks(links)
       posts = links.root.xpath("//post")
-      self.sendEmail1(posts)
+      self.sendEmail(posts)
     end
 
-    def sendEmail1(posts)
+    def sendEmail(posts)
       email_text = ''
       email_html = ''
 
@@ -113,6 +113,5 @@ MESSAGE_END
         smtp.send_message(message, @email[:from_email], @email[:to_email])
       end
     end
-
   end
 end

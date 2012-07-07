@@ -8,6 +8,3 @@ gem 'nokogiri'
 
 # Helpers for date
 gem 'chronic'
-
-# Send email
-gem 'mail'
