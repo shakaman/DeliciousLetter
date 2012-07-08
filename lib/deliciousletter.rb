@@ -6,6 +6,11 @@ require 'rest_client'
 require 'nokogiri'
 require 'chronic'
 require 'net/smtp'
+require 'open-uri'
+
+require 'tilt'
+require 'haml'
+require 'premailer'
 
 require 'plugins/github'
 require 'plugins/twitter'
@@ -25,8 +30,9 @@ module DeliciousLetter
       @delicious  = config[:delicious]
       @email      = config[:email]
       @smtp       = config[:smtp]
+      @theme      = config[:theme]
 
-      self.fetchLastBookmarks()
+      fetchLastBookmarks()
     end
 
 
@@ -53,12 +59,22 @@ module DeliciousLetter
       begin
         response = api["/v1/posts/all?fromdt=#{fromdt}&todt=#{todt}"].post opts
         results = Nokogiri::XML::Document.parse(response.body)
-        DeliciousLetter.orderLinks(results)
+        orderLinks(results)
       rescue => e
         $stderr.puts e.inspect
         false
       end
     end
+
+
+
+    def buildTags(attr)
+      tags = Array.new
+      list = attr['tag'].text
+      tags = list.split(' ')
+    end
+
+
 
     protected
 
@@ -66,7 +82,7 @@ module DeliciousLetter
     # @param  [ String ] file optional config file path
     # @return [ Hash ]   config options
     def load_config(file = nil)
-      self.config = YAML.load_file(file || DeliciousLetter.config_file)
+      self.config = YAML.load_file(file || config_file)
       self.config[:app_dir] ||= root
       self.config
     end
@@ -82,53 +98,116 @@ module DeliciousLetter
     # Delicious v1 API resource. Restful... kinda.
     # @return [RestClient::Resource]
     def api
-      RestClient::Resource.new('https://api.del.icio.us', @delicious[:username], @delicious[:password])
+      RestClient::Resource.new(@delicious[:api], @delicious[:username], @delicious[:password])
     end
 
 
     def orderLinks(links)
       posts = links.root.xpath("//post")
-      self.sendEmail(posts)
+      self.builContent(posts)
     end
 
-    def sendEmail(posts)
-      email_text = ''
-      email_html = ''
+    ##
+    # Build email content
+    #
+    def builContent(posts)
+      msgText = ''
+      msgHtml = ''
 
       posts.each{ |post|
         github = DeliciousLetter::Github.new
         twitter = DeliciousLetter::Twitter.new
 
         if github.isGithub(post.attributes['href'].text)
-          github = github.fetchDetails(post.attributes['href'].text)
-          email_text += github['text']
-          email_html += github['html']
+          github = github.fetchDetails(post.attributes)
+          msgText += github['text']
+          msgHtml += github['html']
 
         elsif twitter.isTwitter(post.attributes['href'].text)
-          tweet = twitter.fetchDetails(post.attributes['href'].text)
-          email_text += tweet['text']
-          email_html += tweet['html']
+          tweet = twitter.fetchDetails(post.attributes)
+          msgText += tweet['text']
+          msgHtml += tweet['html']
+
         else
-          email_text += "#{post.attributes['description'].text} : #{post.attributes['href'].text} \n"
-          email_html += "<h3 style='margin: 15px 0 0 0; font: bold 14px/16px Helvetica; color: #000;'><a style='color: #000;' href='#{post.attributes['href'].text}'>#{post.attributes['description'].text}</a></h3>"
+          title = checkTitle(post.attributes)
+
+          tags = buildTags(post.attributes)
+
+          template = Tilt.new(@theme[:link_row])
+          msgHtml += template.render(self, title: title, url: post.attributes['href'].text, tags: tags)
+          msgText += "#{title} : #{post.attributes['href'].text} \n"
         end
       }
+
+      buildEmail(msgText, msgHtml)
+    end
+
+    ##
+    # Build email with template
+    #
+    def buildEmail(text, html)
+      template = Tilt.new(@theme[:layout])
+      title = 'Le menu de la semaine proposé par MrPorte'
+
+      # Open css file to inject in html
+      css = File.open(@theme[:css])
+      content = template.render(self, title: title, content: html, css: css.read)
+      css.close
+
+      # Create a temporary file with html
+      tmp = File.open("tmp/input.html", "w")
+      tmp.puts content
+      tmp.close
+
+      # Use premailer to add css inline
+      premailer = Premailer.new('tmp/input.html', :warn_level => Premailer::Warnings::SAFE)
+      content = premailer.to_inline_css
+
+      # Remove temporary file
+      File.delete('tmp/input.html')
+
 
       message = <<MESSAGE_END
 From: #{@email[:from_name]} <#{@email[:from_email]}>
 To: Nerds <#{@email[:to_email]}>
 MIME-Version: 1.0
 Content-type: text/html
-Subject: Mr Porte vous propose cette semaine
+Subject: #{title}
 
-<h1 style="font: bold 20px/30px 'Helvetica'; color: #000;">Mr Porte vous propose cette semaine</h1>#{email_html}
+#{content}
 MESSAGE_END
 
+      sendEmail(message)
+    end
+
+
+    ##
+    # Send email
+    #
+    def sendEmail(msg)
       smtp = Net::SMTP.new 'smtp.gmail.com', 587
       smtp.enable_starttls
       smtp.start(@smtp[:domain], @smtp[:login], @smtp[:password], :login) do
-        smtp.send_message(message, @email[:from_email], @email[:to_email])
+        smtp.send_message(msg, @email[:from_email], @email[:to_email])
       end
     end
+
+    ##
+    # Check if title is the best ;)
+    #
+    def checkTitle(attr)
+      if attr['href'].text == attr['description'].text
+        begin
+          doc = Nokogiri::HTML(open(attr['href'].text))
+          title = doc.xpath('//title').text
+        rescue => err
+          title = attr['href'].text
+        end
+      else
+        title = attr['description'].text
+      end
+      return title
+    end
+
   end
 end

@@ -1,0 +1,10 @@
+%h3
+  %a(href='#{url}')= title
+
+%ul.tags
+  %li [
+  - tags.each do |tag|
+    - url = "#{@delicious[:url]}/#{@delicious[:username]}/#{URI.escape(tag)}"
+    %li
+      %a(href="#{url}" target="_blank")= tag
+  %li ]

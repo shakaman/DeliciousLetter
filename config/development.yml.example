@@ -1,4 +1,6 @@
 :delicious:
+  :url: 'http://delicious.com'
+  :api: 'https://api.del.icio.us'
   :username: ''
   :password: ''
 
@@ -14,3 +16,7 @@
   :server: 'smtp.gmail.com'
   :port: 587
 
+:theme:
+  :layout: 'templates/layout.haml'
+  :css: 'css/theme_1.css'
+  :link_row: 'templates/link_row.haml'

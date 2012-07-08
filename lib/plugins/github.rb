@@ -12,6 +12,7 @@ module DeliciousLetter
   class Github
 
     def initialize(opts = {})
+      @delicious = DeliciousLetter.config[:delicious]
     end
 
     # Check if url is github
@@ -27,14 +28,18 @@ module DeliciousLetter
     # @param  [String]  url
     # @return github
     #
-    def fetchDetails(url)
+    def fetchDetails(attr)
+      url = attr['href'].text
       if args = url.match('https?://github\.com/(.+)/(.+)')
         begin
           data = open("https://api.github.com/repos/#{args[1]}/#{args[2]}").read
           github = Yajl::Parser.parse(data)
 
+          tags = DeliciousLetter.buildTags(attr)
+
+          template = Tilt.new('templates/github.haml')
+          html = template.render(self, github: github, url: url, tags: tags)
           text = "#{github['name']}:\n#{github['description']}\nlink\n"
-          html = "<h3 style='margin: 15px 0 0 0; font: bold 14px/16px Helvetica; color: #000;'><a style='color: #000;' href='#{url}'>#{github['name']}</a> <span style='font: normal 12px Helvetica'>(github)</span></h3><p style='margin: 0; font: normal 12px/14px Helvetica; color: #000;'>#{github['description']}</p>"
 
           msg = {'text' => text, 'html' => html}
         rescue => err

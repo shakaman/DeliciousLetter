@@ -12,6 +12,7 @@ module DeliciousLetter
   class Twitter
 
     def initialize(opts = {})
+      @delicious = DeliciousLetter.config[:delicious]
     end
 
     # Check if url is twitter
@@ -27,14 +28,18 @@ module DeliciousLetter
     # @param  [String]  url
     # @return github
     #
-    def fetchDetails(url)
+    def fetchDetails(attr)
+      url = attr['href'].text
       if args = url.match('https?://twitter\.com.*status/(\d+)')
         begin
           data = open("http://api.twitter.com/1/statuses/show/#{args[1]}.json").read
           tweet = Yajl::Parser.parse(data)
 
+          tags = DeliciousLetter.buildTags(attr)
+
+          template = Tilt.new('templates/twitter.haml')
+          html = template.render(self, tweet: tweet, url: url, tags: tags)
           text = "#{tweet['user']['name']}:\n#{tweet['text']}\nlink\n"
-          html = "<h3 style='margin: 15px 0 0 0; font: bold 14px/16px Helvetica; color: #000;'><a style='color: #000;' href='#{url}'>#{tweet['user']['name']}</a> <span style='font: normal 12px Helvetica'>(twitter)</span></h3><p style='margin: 0; font: normal 12px/14px Helvetica; color: #000;'>#{tweet['text']}</p>"
 
           msg = {'text' => text, 'html' => html}
         rescue => err

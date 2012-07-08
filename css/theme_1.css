@@ -1,0 +1,13 @@
+* { margin: 0; padding: 0; }
+body { padding: 10px; background: #fff; }
+h1 { margin: 0; font: bold 20px/20px 'Helvetica'; color: #333; }
+
+h3 { margin: 15px 0 0 0; font: bold 14px/16px 'Helvetica'; color: #000; }
+h3 a { color: #000; }
+h3 span { font: normal 12px 'Helvetica'; }
+
+p { margin: 0; font: normal 12px/14px 'Helvetica'; color: #000; }
+
+ul.tags { margin: 5px 0 0 0; }
+ul.tags li { display: inline; }
+ul.tags li a { font: bold 11px/12px 'Helvetica'; color: #333; text-decoration: none; }
