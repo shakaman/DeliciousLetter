@@ -10,6 +10,7 @@ require 'open-uri'
 
 require 'tilt'
 require 'haml'
+require 'pony'
 require 'premailer'
 
 require 'plugins/github'
@@ -111,7 +112,7 @@ module DeliciousLetter
     # Build email content
     #
     def builContent(posts)
-      msgText = ''
+      msgText = "\n"
       msgHtml = ''
 
       posts.each{ |post|
@@ -135,7 +136,7 @@ module DeliciousLetter
 
           template = Tilt.new(@theme[:link_row])
           msgHtml += template.render(self, title: title, url: post.attributes['href'].text, tags: tags)
-          msgText += "#{title} : #{post.attributes['href'].text} \n"
+          msgText += "#{title}\n#{post.attributes['href'].text}\n\n"
         end
       }
 
@@ -161,35 +162,38 @@ module DeliciousLetter
 
       # Use premailer to add css inline
       premailer = Premailer.new('tmp/input.html', :warn_level => Premailer::Warnings::SAFE)
-      content = premailer.to_inline_css
+      html = premailer.to_inline_css
 
       # Remove temporary file
       File.delete('tmp/input.html')
 
-
-      message = <<MESSAGE_END
-From: #{@email[:from_name]} <#{@email[:from_email]}>
-To: Nerds <#{@email[:to_email]}>
-MIME-Version: 1.0
-Content-type: text/html
-Subject: #{title}
-
-#{content}
-MESSAGE_END
-
-      sendEmail(message)
+      sendEmail(title, html, text)
     end
 
 
     ##
     # Send email
     #
-    def sendEmail(msg)
-      smtp = Net::SMTP.new 'smtp.gmail.com', 587
-      smtp.enable_starttls
-      smtp.start(@smtp[:domain], @smtp[:login], @smtp[:password], :login) do
-        smtp.send_message(msg, @email[:from_email], @email[:to_email])
-      end
+    def sendEmail(title, html, text)
+      Pony.mail({
+        :from               => @email[:from_email],
+        :to                 => @email[:to_email],
+        :subject            => title,
+        :body               => text,
+        :html_body          => html,
+        :charset            => 'utf-8',
+        :text_part_charset  => 'utf-8',
+        :via => :smtp,
+        :via_options => {
+          :address              => @smtp[:server],
+          :port                 => @smtp[:port],
+          :enable_starttls_auto => true,
+          :user_name            => @smtp[:login],
+          :password             => @smtp[:password],
+          :authentication       => :login, # :plain, :login, :cram_md5, no auth by default
+          :domain               => @smtp[:domain] # the HELO domain provided by the client to the server
+        }
+      })
     end
 
     ##

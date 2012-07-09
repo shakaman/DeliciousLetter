@@ -18,3 +18,6 @@ gem 'yajl-ruby',        '~>1.1'
 gem 'tilt'
 gem 'haml'
 gem 'premailer'
+
+# Mail
+gem 'pony'

@@ -24,7 +24,7 @@ module DeliciousLetter
     end
 
 
-    # Fetch details from github
+    # Fetch details from twitter
     # @param  [String]  url
     # @return github
     #
@@ -39,7 +39,7 @@ module DeliciousLetter
 
           template = Tilt.new('templates/twitter.haml')
           html = template.render(self, tweet: tweet, url: url, tags: tags)
-          text = "#{tweet['user']['name']}:\n#{tweet['text']}\nlink\n"
+          text = "#{tweet['user']['name']}:\n#{tweet['text']}\n#{url}\n\n"
 
           msg = {'text' => text, 'html' => html}
         rescue => err

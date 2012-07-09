@@ -39,7 +39,7 @@ module DeliciousLetter
 
           template = Tilt.new('templates/github.haml')
           html = template.render(self, github: github, url: url, tags: tags)
-          text = "#{github['name']}:\n#{github['description']}\nlink\n"
+          text = "#{github['name']}:\n#{github['description']}\n#{url}\n\n"
 
           msg = {'text' => text, 'html' => html}
         rescue => err
