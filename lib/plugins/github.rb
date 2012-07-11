@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
 
-require 'open-uri'
+require 'typhoeus'
 require 'yajl'
 
 module DeliciousLetter
@@ -19,7 +19,7 @@ module DeliciousLetter
     # @param  [String]  url
     # @return true/false
     #
-    def isGithub(url)
+    def is_github(url)
       return true if url.match('https?://github\.com/(.+)/(.+)')
     end
 
@@ -28,24 +28,19 @@ module DeliciousLetter
     # @param  [String]  url
     # @return github
     #
-    def fetchDetails(attr)
+    def fetch_details(attr)
       url = attr['href'].text
-      if args = url.match('https?://github\.com/(.+)/(.+)')
-        begin
-          data = open("https://api.github.com/repos/#{args[1]}/#{args[2]}").read
-          github = Yajl::Parser.parse(data)
+      if args = url.match('https?://github.com/([^\/]+)/([^\/]+)/?$')
+        data = Typhoeus::Request.get("https://api.github.com/repos/#{args[1]}/#{args[2]}").body
+        github = Yajl::Parser.parse(data)
 
-          tags = DeliciousLetter.buildTags(attr)
+        tags = DeliciousLetter.build_tags(attr)
 
-          template = Tilt.new('templates/github.haml')
-          html = template.render(self, github: github, url: url, tags: tags)
-          text = "#{github['name']}:\n#{github['description']}\n#{url}\n\n"
+        template = Tilt.new('templates/github.haml')
+        html = template.render(self, github: github, url: url, tags: tags)
+        text = "#{github['name']}:\n#{github['description']}\n#{url}\n\n"
 
-          msg = {'text' => text, 'html' => html}
-        rescue => err
-          msg = nil
-        end
-        msg
+        {'text' => text, 'html' => html}
       end
     end
   end

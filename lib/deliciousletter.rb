@@ -33,7 +33,7 @@ module DeliciousLetter
       @smtp       = config[:smtp]
       @theme      = config[:theme]
 
-      fetchLastBookmarks()
+      fetch_last_bookmarks()
     end
 
 
@@ -49,8 +49,8 @@ module DeliciousLetter
     # @param  [String]  fromdt={CCYY-MM-DDThh:mm:ssZ} (optional) Filter for posts on this date or later
     # @param  [String]  todt={CCYY-MM-DDThh:mm:ssZ} (optional) Filter for posts on this date or earlier
     # @return [Boolean]
-    #def fetchLastBookmarks(fromdt, todt, opts={})
-    def fetchLastBookmarks
+    #def fetch_last_bookmarks(fromdt, todt, opts={})
+    def fetch_last_bookmarks
       opts = {}
       fromdt =  DateTime.parse(Chronic.parse('monday', :context => :past).to_s)
       fromdt = fromdt.strftime("%Y-%m-%dT%H:%M:%SZ").to_s
@@ -60,7 +60,7 @@ module DeliciousLetter
       begin
         response = api["/v1/posts/all?fromdt=#{fromdt}&todt=#{todt}"].post opts
         results = Nokogiri::XML::Document.parse(response.body)
-        orderLinks(results)
+        order_links(results)
       rescue => e
         $stderr.puts e.inspect
         false
@@ -69,7 +69,7 @@ module DeliciousLetter
 
 
 
-    def buildTags(attr)
+    def build_tags(attr)
       tags = Array.new
       list = attr['tag'].text
       tags = list.split(' ')
@@ -103,36 +103,39 @@ module DeliciousLetter
     end
 
 
-    def orderLinks(links)
+    def order_links(links)
       posts = links.root.xpath("//post")
-      self.builContent(posts)
+      self.buil_content(posts)
     end
 
     ##
     # Build email content
     #
-    def builContent(posts)
+    def buil_content(posts)
       msgText = "\n"
       msgHtml = ''
 
       posts.each{ |post|
+        # got to next post if private == false
+        next if post.attributes['private'].text == "yes" && !@delicious[:private]
+
         github = DeliciousLetter::Github.new
         twitter = DeliciousLetter::Twitter.new
 
-        if github.isGithub(post.attributes['href'].text)
-          github = github.fetchDetails(post.attributes)
+        if github.is_github(post.attributes['href'].text)
+          github = github.fetch_details(post.attributes)
           msgText += github['text']
           msgHtml += github['html']
 
-        elsif twitter.isTwitter(post.attributes['href'].text)
-          tweet = twitter.fetchDetails(post.attributes)
+        elsif twitter.is_twitter(post.attributes['href'].text)
+          tweet = twitter.fetch_details(post.attributes)
           msgText += tweet['text']
           msgHtml += tweet['html']
 
         else
-          title = checkTitle(post.attributes)
+          title = check_title(post.attributes)
 
-          tags = buildTags(post.attributes)
+          tags = build_tags(post.attributes)
 
           template = Tilt.new(@theme[:link_row])
           msgHtml += template.render(self, title: title, url: post.attributes['href'].text, tags: tags)
@@ -140,13 +143,13 @@ module DeliciousLetter
         end
       }
 
-      buildEmail(msgText, msgHtml)
+      build_email(msgText, msgHtml)
     end
 
     ##
     # Build email with template
     #
-    def buildEmail(text, html)
+    def build_email(text, html)
       template = Tilt.new(@theme[:layout])
       title = 'Le menu de la semaine proposé par MrPorte'
 
@@ -167,14 +170,14 @@ module DeliciousLetter
       # Remove temporary file
       File.delete('tmp/input.html')
 
-      sendEmail(title, html, text)
+      send_email(title, html, text)
     end
 
 
     ##
     # Send email
     #
-    def sendEmail(title, html, text)
+    def send_email(title, html, text)
       Pony.mail({
         :from               => @email[:from_email],
         :to                 => @email[:to_email],
@@ -199,19 +202,17 @@ module DeliciousLetter
     ##
     # Check if title is the best ;)
     #
-    def checkTitle(attr)
+    def check_title(attr)
       if attr['href'].text == attr['description'].text
         begin
           doc = Nokogiri::HTML(open(attr['href'].text))
-          title = doc.xpath('//title').text
+          doc.xpath('//title').text
         rescue => err
-          title = attr['href'].text
+          attr['href'].text
         end
       else
-        title = attr['description'].text
+        attr['description'].text
       end
-      return title
     end
-
   end
 end

@@ -5,6 +5,7 @@ gem 'pry'
 
 # client for API
 gem 'rest-client',      '~>1.6'
+gem 'typhoeus'
 
 # parse XML
 gem 'nokogiri'

@@ -3,6 +3,7 @@
   :api: 'https://api.del.icio.us'
   :username: ''
   :password: ''
+  :private: false
 
 :email:
   :to_email: ''

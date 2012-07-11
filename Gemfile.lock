@@ -7,6 +7,7 @@ GEM
     css_parser (1.2.6)
       addressable
       rdoc
+    ffi (1.0.11)
     haml (3.1.6)
     htmlentities (4.3.1)
     i18n (0.6.0)
@@ -37,6 +38,9 @@ GEM
     treetop (1.4.10)
       polyglot
       polyglot (>= 0.3.1)
+    typhoeus (0.4.2)
+      ffi (~> 1.0)
+      mime-types (~> 1.18)
     yajl-ruby (1.1.0)
 
 PLATFORMS
@@ -51,4 +55,5 @@ DEPENDENCIES
   pry
   rest-client (~> 1.6)
   tilt
+  typhoeus
   yajl-ruby (~> 1.1)
