@@ -122,17 +122,9 @@ module DeliciousLetter
         github = DeliciousLetter::Github.new
         twitter = DeliciousLetter::Twitter.new
 
-        if github.is_github(post.attributes['href'].text)
-          github = github.fetch_details(post.attributes)
-          msgText += github['text']
-          msgHtml += github['html']
+        plugin = [github, twitter].find {|plugin| plugin.is?(post.attributes['href'].text) }
 
-        elsif twitter.is_twitter(post.attributes['href'].text)
-          tweet = twitter.fetch_details(post.attributes)
-          msgText += tweet['text']
-          msgHtml += tweet['html']
-
-        else
+        if plugin.nil?
           title = check_title(post.attributes)
 
           tags = build_tags(post.attributes)
@@ -140,6 +132,10 @@ module DeliciousLetter
           template = Tilt.new(@theme[:link_row])
           msgHtml += template.render(self, title: title, url: post.attributes['href'].text, tags: tags)
           msgText += "#{title}\n#{post.attributes['href'].text}\n\n"
+        else
+          details = plugin.fetch_details(post.attributes)
+          msgText += details['text']
+          msgHtml += details['html']
         end
       }
 

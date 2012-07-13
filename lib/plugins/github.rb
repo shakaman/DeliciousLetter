@@ -19,7 +19,7 @@ module DeliciousLetter
     # @param  [String]  url
     # @return true/false
     #
-    def is_github(url)
+    def is?(url)
       return true if url.match('https?://github\.com/(.+)/(.+)')
     end
 
