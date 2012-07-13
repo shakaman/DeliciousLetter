@@ -19,7 +19,7 @@ module DeliciousLetter
     # @param  [String]  url
     # @return true/false
     #
-    def is_twitter(url)
+    def is?(url)
       return true if url.match('https?://twitter\.com.*status/(\d+)')
     end
 
