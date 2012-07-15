@@ -5,8 +5,6 @@ require 'yaml'
 require 'rest_client'
 require 'nokogiri'
 require 'chronic'
-require 'net/smtp'
-require 'open-uri'
 
 require 'tilt'
 require 'haml'

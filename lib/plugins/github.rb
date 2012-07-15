@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
 
-require 'typhoeus'
+require 'rest_client'
 require 'yajl'
 
 module DeliciousLetter
@@ -13,6 +13,7 @@ module DeliciousLetter
 
     def initialize(opts = {})
       @delicious = DeliciousLetter.config[:delicious]
+      @api = RestClient::Resource.new("https://api.github.com")
     end
 
     # Check if url is github
@@ -31,8 +32,8 @@ module DeliciousLetter
     def fetch_details(attr)
       url = attr['href'].text
       if args = url.match('https?://github.com/([^\/]+)/([^\/]+)/?$')
-        data = Typhoeus::Request.get("https://api.github.com/repos/#{args[1]}/#{args[2]}").body
-        github = Yajl::Parser.parse(data)
+        data = @api["/repos/#{args[1]}/#{args[2]}"].get
+        github = Yajl::Parser.parse(data.body)
 
         tags = DeliciousLetter.build_tags(attr)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
 
-require 'typhoeus'
+require 'rest_client'
 require 'yajl'
 
 module DeliciousLetter
@@ -13,6 +13,7 @@ module DeliciousLetter
 
     def initialize(opts = {})
       @delicious = DeliciousLetter.config[:delicious]
+      @api = RestClient::Resource.new("http://api.twitter.com/1")
     end
 
     # Check if url is twitter
@@ -31,8 +32,8 @@ module DeliciousLetter
     def fetch_details(attr)
       url = attr['href'].text
       if args = url.match('https?://twitter\.com.*status/(\d+)')
-        data = Typhoeus::Request.get("http://api.twitter.com/1/statuses/show/#{args[1]}.json").body
-        tweet = Yajl::Parser.parse(data)
+        data = @api["/statuses/show/#{args[1]}.json"].get
+        tweet = Yajl::Parser.parse(data.body)
 
         tags = DeliciousLetter.build_tags(attr)
 
