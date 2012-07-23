@@ -31,7 +31,7 @@ module DeliciousLetter
     #
     def fetch_details(attr)
       url = attr['href'].text
-      if args = url.match('https?://github.com/([^\/]+)/([^\/]+)/?$')
+      if args = url.match('https?://github.com/([^\/]+)/([^\/]+)')
         data = @api["/repos/#{args[1]}/#{args[2]}"].get
         github = Yajl::Parser.parse(data.body)
 
