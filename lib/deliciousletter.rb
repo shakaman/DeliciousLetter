@@ -66,13 +66,9 @@ module DeliciousLetter
     end
 
 
-
-    def build_tags(attr)
-      tags = Array.new
-      list = attr['tag'].text
-      tags = list.split(' ')
+    def build_tags(attrs)
+      attrs['tag'].text.split(' ')
     end
-
 
 
     protected
@@ -148,14 +144,11 @@ module DeliciousLetter
       title = 'Le menu de la semaine proposé par MrPorte'
 
       # Open css file to inject in html
-      css = File.open(@theme[:css])
-      content = template.render(self, title: title, content: html, css: css.read)
-      css.close
+      css = File.read(@theme[:css])
+      content = template.render(self, title: title, content: html, css: css)
 
       # Create a temporary file with html
-      tmp = File.open("tmp/input.html", "w")
-      tmp.puts content
-      tmp.close
+      File.open("tmp/input.html", "w") {|f| f.write content }
 
       # Use premailer to add css inline
       premailer = Premailer.new('tmp/input.html', :warn_level => Premailer::Warnings::SAFE)
