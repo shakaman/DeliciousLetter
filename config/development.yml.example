@@ -21,3 +21,10 @@
   :layout: 'templates/layout.haml'
   :css: 'css/theme_1.css'
   :link_row: 'templates/link_row.haml'
+
+:trello:
+  :api: 'https://api.trello.com/1'
+  :key: ''
+  :secret: ''
+  :token: ''
+  :board: ''

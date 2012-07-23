@@ -13,6 +13,7 @@ require 'premailer'
 
 require 'plugins/github'
 require 'plugins/twitter'
+require 'plugins/trello'
 
 module DeliciousLetter
   @@config = nil
@@ -50,11 +51,11 @@ module DeliciousLetter
     #def fetch_last_bookmarks(fromdt, todt, opts={})
     def fetch_last_bookmarks
       opts = {}
-      fromdt =  DateTime.parse(Chronic.parse('monday', :context => :past).to_s)
+      fromdt = DateTime.parse(Chronic.parse('monday', :context => :past).to_s)
       fromdt = fromdt.strftime("%Y-%m-%dT%H:%M:%SZ").to_s
 
-      todt   =  DateTime.parse(Chronic.parse('monday', :context => :future).to_s)
-      todt = todt.strftime("%Y-%m-%dT%H:%M:%SZ").to_s
+      todt   = DateTime.parse(Chronic.parse('monday', :context => :future).to_s)
+      todt   = todt.strftime("%Y-%m-%dT%H:%M:%SZ").to_s
       begin
         response = api["/v1/posts/all?fromdt=#{fromdt}&todt=#{todt}"].post opts
         results = Nokogiri::XML::Document.parse(response.body)
@@ -75,7 +76,7 @@ module DeliciousLetter
 
 
 
-    protected
+    #protected
 
     # Load configuration file
     # @param  [ String ] file optional config file path
@@ -136,6 +137,11 @@ module DeliciousLetter
           msgHtml += details['html']
         end
       }
+
+      trello = DeliciousLetter::Trello.new
+      content_trello = trello.get_last_news
+      msgText += content_trello['text']
+      msgHtml += content_trello['html']
 
       build_email(msgText, msgHtml)
     end
