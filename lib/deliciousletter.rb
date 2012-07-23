@@ -67,16 +67,12 @@ module DeliciousLetter
     end
 
 
-
-    def build_tags(attr)
-      tags = Array.new
-      list = attr['tag'].text
-      tags = list.split(' ')
+    def build_tags(attrs)
+      attrs['tag'].text.split(' ')
     end
 
 
-
-    #protected
+    protected
 
     # Load configuration file
     # @param  [ String ] file optional config file path
@@ -104,15 +100,15 @@ module DeliciousLetter
 
     def order_links(links)
       posts = links.root.xpath("//post")
-      self.buil_content(posts)
+      self.build_content(posts)
     end
 
     ##
     # Build email content
     #
-    def buil_content(posts)
-      msgText = "\n"
-      msgHtml = ''
+    def build_content(posts)
+      msg_text = "\n"
+      msg_html = ''
 
       posts.each{ |post|
         # got to next post if private == false
@@ -129,21 +125,21 @@ module DeliciousLetter
           tags = build_tags(post.attributes)
 
           template = Tilt.new(@theme[:link_row])
-          msgHtml += template.render(self, title: title, url: post.attributes['href'].text, tags: tags)
-          msgText += "#{title}\n#{post.attributes['href'].text}\n\n"
+          msg_html += template.render(self, title: title, url: post.attributes['href'].text, tags: tags)
+          msg_text += "#{title}\n#{post.attributes['href'].text}\n[ #{tags.join ' '} ]\n\n"
         else
           details = plugin.fetch_details(post.attributes)
-          msgText += details['text']
-          msgHtml += details['html']
+          msg_text += details['text']
+          msg_html += details['html']
         end
       }
 
       trello = DeliciousLetter::Trello.new
       content_trello = trello.get_last_news
-      msgText += content_trello['text']
-      msgHtml += content_trello['html']
+      msg_text += content_trello['text']
+      msg_html += content_trello['html']
 
-      build_email(msgText, msgHtml)
+      build_email(msg_text, msg_html)
     end
 
     ##
@@ -154,14 +150,11 @@ module DeliciousLetter
       title = 'Le menu de la semaine proposé par MrPorte'
 
       # Open css file to inject in html
-      css = File.open(@theme[:css])
-      content = template.render(self, title: title, content: html, css: css.read)
-      css.close
+      css = File.read(@theme[:css])
+      content = template.render(self, title: title, content: html, css: css)
 
       # Create a temporary file with html
-      tmp = File.open("tmp/input.html", "w")
-      tmp.puts content
-      tmp.close
+      File.open("tmp/input.html", "w") {|f| f.write content }
 
       # Use premailer to add css inline
       premailer = Premailer.new('tmp/input.html', :warn_level => Premailer::Warnings::SAFE)
