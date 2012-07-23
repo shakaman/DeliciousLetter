@@ -66,13 +66,9 @@ module DeliciousLetter
     end
 
 
-
-    def build_tags(attr)
-      tags = Array.new
-      list = attr['tag'].text
-      tags = list.split(' ')
+    def build_tags(attrs)
+      attrs['tag'].text.split(' ')
     end
-
 
 
     protected
@@ -103,13 +99,13 @@ module DeliciousLetter
 
     def order_links(links)
       posts = links.root.xpath("//post")
-      self.buil_content(posts)
+      self.build_content(posts)
     end
 
     ##
     # Build email content
     #
-    def buil_content(posts)
+    def build_content(posts)
       msgText = "\n"
       msgHtml = ''
 
@@ -129,7 +125,7 @@ module DeliciousLetter
 
           template = Tilt.new(@theme[:link_row])
           msgHtml += template.render(self, title: title, url: post.attributes['href'].text, tags: tags)
-          msgText += "#{title}\n#{post.attributes['href'].text}\n\n"
+          msgText += "#{title}\n#{post.attributes['href'].text}\n[ #{tags.join ' '} ]\n\n"
         else
           details = plugin.fetch_details(post.attributes)
           msgText += details['text']
@@ -148,14 +144,11 @@ module DeliciousLetter
       title = 'Le menu de la semaine proposé par MrPorte'
 
       # Open css file to inject in html
-      css = File.open(@theme[:css])
-      content = template.render(self, title: title, content: html, css: css.read)
-      css.close
+      css = File.read(@theme[:css])
+      content = template.render(self, title: title, content: html, css: css)
 
       # Create a temporary file with html
-      tmp = File.open("tmp/input.html", "w")
-      tmp.puts content
-      tmp.close
+      File.open("tmp/input.html", "w") {|f| f.write content }
 
       # Use premailer to add css inline
       premailer = Premailer.new('tmp/input.html', :warn_level => Premailer::Warnings::SAFE)
