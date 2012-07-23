@@ -103,13 +103,13 @@ module DeliciousLetter
 
     def order_links(links)
       posts = links.root.xpath("//post")
-      self.buil_content(posts)
+      self.build_content(posts)
     end
 
     ##
     # Build email content
     #
-    def buil_content(posts)
+    def build_content(posts)
       msgText = "\n"
       msgHtml = ''
 
@@ -129,7 +129,7 @@ module DeliciousLetter
 
           template = Tilt.new(@theme[:link_row])
           msgHtml += template.render(self, title: title, url: post.attributes['href'].text, tags: tags)
-          msgText += "#{title}\n#{post.attributes['href'].text}\n\n"
+          msgText += "#{title}\n#{post.attributes['href'].text}\n[ #{tags.join ' '} ]\n\n"
         else
           details = plugin.fetch_details(post.attributes)
           msgText += details['text']
