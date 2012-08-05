@@ -22,6 +22,7 @@
 :theme:
   :layout: 'templates/layout.haml'
   :css: 'css/theme_1.css'
+  :delicious: 'templates/delicious.haml'
   :link_row: 'templates/link_row.haml'
 
 :trello:

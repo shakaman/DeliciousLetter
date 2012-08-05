@@ -1,15 +1,31 @@
-* { margin: 0; padding: 0; }
-body { padding: 10px; background: #fff; }
-h1 { margin: 0; font: bold 20px/20px 'Helvetica'; color: #333; }
+body { margin: 0; padding: 0; background: #eee; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+table, tr, td { margin: 0; padding: 0; border: 0; border-spacing: 0px; border-collapse: collapse; }
 
-h2.trello { padding: 10px 0 0 0; margin: 30px 0 0 0; font: bold 16px/18px 'Helvetica'; color: #59acf3; border-top: 1px solid #59acf3; }
+td.title { height: 97px; vertical-align: middle; background-color: #546781; text-shadow: #8aa3c6 0px 1px 0px; }
+.title h1 { margin: 0; padding: 0; font-size: 30px; font-weight: normal; color: #192c45; }
+.month { margin: 0; padding: 0; font: bold 13px 'Helvetica'; color: #192c45; text-transform: uppercase; text-shadow: #8aa3c6 0px 1px 0px; }
+.day { margin: 0; padding: 0; font: bold 23px 'Helvetica'; color: #192c45; text-transform: uppercase; text-shadow: #8aa3c6 0px 1px 0px; }
 
-h3 { margin: 15px 0 0 0; font: bold 14px/16px 'Helvetica'; color: #000; }
-h3 a { color: #000; }
-h3 span { font: normal 12px 'Helvetica'; }
+.subtitle { height: 49px; width: 100%; vertical-align: middle; background: #c8cfd8; border-left: 1px solid #BAC2CC; border-right: 1px solid #BAC2CC; border-bottom: 1px solid #98a3b4; border-top: 1px solid #BAC2CC }
+.subtitle h3 { margin: 0 0 0 17px; padding: 0; font-size: 18px; font-weight: normal; color: #324258; text-shadow: #ffffff 0px 1px 0px; }
 
-p { margin: 0; font: normal 12px/14px 'Helvetica'; color: #000; }
+.content { padding: 0 21px 15px 21px; background: #edeff2; border-left: 1px solid #bac2cc; border-right: 1px solid #bac2cc; border-bottom: 3px solid #ffffff; border-top: 1px solid #ffffff; }
+h4 { margin: 20px 0 0 0; font-size: 14px; line-height: 20px; font-weight: bold; color: #56667d; text-shadow: #ffffff 0px 1px 0px; }
+h4 a { color: #56667d; text-decoration: none; }
+h4 a:hover { text-decoration: underline; }
+h4 span { font-size: 11px; font-weight: normal; }
+p {  margin: 0; font-size: 12px; line-height: 16px; font-weight: normal; color: #56667d; }
 
-ul.tags { margin: 5px 0 0 0; }
+ul.tags { margin: 0 0 10px 0; padding: 0; font-size: 10px; line-height: 12px; font-weight: normal; color: #56667d; }
 ul.tags li { display: inline; }
-ul.tags li a { font: bold 11px/12px 'Helvetica'; color: #333; text-decoration: none; }
+ul.tags li a { color: #71849e; text-decoration: none; }
+ul.tags li a:hover { text-decoration: underline; }
+
+ul { margin: 0 0 10px 10px; padding: 0 0 0 10px; font-size: 12px; line-height: 14px; font-weight: normal; color: #56667d; }
+ul li {  }
+ul li a { color: #56667d; text-decoration: none; }
+ul li a:hover { text-decoration: underline; }
+
+.footer { height: 50px; background: #e7eaee; vertical-align: middle; border: 1px solid #b6bec9; text-align: center; }
+.footer p { margin: 0; font: bold 10px/18px Arial; color: #96a2b3; }
+.footer p a { color: #455670; text-decoration: underline; }

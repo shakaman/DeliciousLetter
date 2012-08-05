@@ -135,6 +135,9 @@ module DeliciousLetter
         end
       }
 
+      template = Tilt.new(@theme[:delicious])
+      msg_html = template.render(self, title: 'Delicious', content: msg_html)
+
       if @trello[:activate]
         trello = DeliciousLetter::Trello.new
         content_trello = trello.get_last_news
@@ -150,11 +153,15 @@ module DeliciousLetter
     #
     def build_email(text, html)
       template = Tilt.new(@theme[:layout])
-      title = 'Le menu de la semaine proposé par MrPorte'
+      title = "Le menu de la semaine proposé<br /><strong>par MrPorte</strong>"
+      #title = "Le menu de la semaine proposé par MrPorte"
+      d = DateTime.now()
+      month = d.strftime('%B').to_s
+      day = d.strftime('%d').to_s
 
       # Open css file to inject in html
       css = File.read(@theme[:css])
-      content = template.render(self, title: title, content: html, css: css)
+      content = template.render(self, title: title, month: month, day: day, content: html, css: css)
 
       # Create a temporary file with html
       File.open("tmp/input.html", "w") {|f| f.write content }
@@ -166,7 +173,8 @@ module DeliciousLetter
       # Remove temporary file
       File.delete('tmp/input.html')
 
-      send_email(title, html, text)
+      email_title = 'Le menu de la semaine'
+      send_email(email_title, html, text)
     end
 
 

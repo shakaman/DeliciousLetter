@@ -7,5 +7,35 @@
     %style= css
 
   %body
-    %h1= title
-    = content
+    %table(width="100%")
+      %tbody
+        %tr(valign="top")
+          %td(valign="top")
+            %table(align="center" width="626" style="margin: 0 auto")
+              %tbody
+                %tr
+                  %td.title(valign="middle")
+                    %table(align="center" width="555" height="97")
+                      %tbody
+                        %tr
+                          %td(valign="middle" width="20px" style="vertical-align:middle; text-align: left;")
+                          %td(valign="middle" style="vertical-align: middle; text-align: left;")
+                            %h1= title
+                          %td(width="55" valign="middle" style="vertical-align:middle; text-align: center;")
+                            %h2.month= month
+                            %h2.day= day
+                %tr
+                  %td(valign="top")
+                    %table(align="center" width="100%" bgcolor="#ffffff" style="border-width: 3px; border-color: #ffffff; border-style: solid;")
+                      %tbody
+                        = content
+
+                        %tr
+                          %td.footer(colspan="2" valign="middle")
+                            %p
+                              != 'Cette newsletter est propos&eacute;e par '
+                              %a(href="http://www.af83.com" target="_blank") af83
+                              != ', son contenu est strictement priv&eacute;'
+                            %p
+                              Fork me on Github : 
+                              %a(href="http://github.com/shakaman/DeliciousLetter" target="_blank") DeliciousLetter
