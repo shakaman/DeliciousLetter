@@ -24,6 +24,7 @@ module DeliciousLetter
       fromdt = DateTime.parse(Chronic.parse('monday', :context => :past).to_s).to_time.to_i
       todt   = DateTime.parse(Chronic.parse('monday', :context => :future).to_s).to_time.to_i
 
+      tpl         = Tilt.new('templates/trello.haml')
       tpl_card    = Tilt.new('templates/trello_card.haml')
       tpl_column  = Tilt.new('templates/trello_column.haml')
 
@@ -45,7 +46,9 @@ module DeliciousLetter
         column_html += tpl_column.render(self, name: board['name'], cards: cards_html)
         column_text += "# #{board['name']} #\n#{cards_text}\n\n\n"
       end
-      {'text' => column_text, 'html' => column_html}
+
+      html = tpl.render(self, content: column_html)
+      {'text' => column_text, 'html' => html}
     end
   end
 end
