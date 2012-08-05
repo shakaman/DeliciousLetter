@@ -25,6 +25,7 @@
   :link_row: 'templates/link_row.haml'
 
 :trello:
+  :activate: true
   :api: 'https://api.trello.com/1'
   :key: ''
   :secret: ''

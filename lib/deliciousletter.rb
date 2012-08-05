@@ -31,6 +31,7 @@ module DeliciousLetter
       @email      = config[:email]
       @smtp       = config[:smtp]
       @theme      = config[:theme]
+      @trello     = config[:trello]
 
       fetch_last_bookmarks()
     end
@@ -134,10 +135,12 @@ module DeliciousLetter
         end
       }
 
-      trello = DeliciousLetter::Trello.new
-      content_trello = trello.get_last_news
-      msg_text += content_trello['text']
-      msg_html += content_trello['html']
+      if @trello[:activate]
+        trello = DeliciousLetter::Trello.new
+        content_trello = trello.get_last_news
+        msg_text += content_trello['text']
+        msg_html += content_trello['html']
+      end
 
       build_email(msg_text, msg_html)
     end
