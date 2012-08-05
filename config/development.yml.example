@@ -6,11 +6,14 @@
   :private: false
   :fromdt: 'monday 00:00'
   :todt: 'monday 00:00'
+  :title: 'Delicious'
 
 :email:
   :to_email: ''
   :from_name: ''
   :from_email: ''
+  :title: "Title"
+  :email_title: "Title"
 
 :smtp:
   :domain: 'domain'

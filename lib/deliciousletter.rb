@@ -95,7 +95,9 @@ module DeliciousLetter
     # Delicious v1 API resource. Restful... kinda.
     # @return [RestClient::Resource]
     def api
-      RestClient::Resource.new(@delicious[:api], @delicious[:username], @delicious[:password])
+      RestClient::Resource.new(@delicious[:api],
+                               @delicious[:username],
+                               @delicious[:password])
     end
 
 
@@ -126,7 +128,9 @@ module DeliciousLetter
           tags = build_tags(post.attributes)
 
           template = Tilt.new(@theme[:link_row])
-          msg_html += template.render(self, title: title, url: post.attributes['href'].text, tags: tags)
+          msg_html += template.render(self, title: title,
+                                      url: post.attributes['href'].text,
+                                      tags: tags)
           msg_text += "#{title}\n#{post.attributes['href'].text}\n[ #{tags.join ' '} ]\n\n"
         else
           details = plugin.fetch_details(post.attributes)
@@ -136,7 +140,7 @@ module DeliciousLetter
       }
 
       template = Tilt.new(@theme[:delicious])
-      msg_html = template.render(self, title: 'Delicious', content: msg_html)
+      msg_html = template.render(self, title: @delicious[:title], content: msg_html)
 
       if @trello[:activate]
         trello = DeliciousLetter::Trello.new
@@ -153,15 +157,18 @@ module DeliciousLetter
     #
     def build_email(text, html)
       template = Tilt.new(@theme[:layout])
-      title = "Le menu de la semaine proposé<br /><strong>par MrPorte</strong>"
-      #title = "Le menu de la semaine proposé par MrPorte"
       d = DateTime.now()
       month = d.strftime('%B').to_s
       day = d.strftime('%d').to_s
 
       # Open css file to inject in html
       css = File.read(@theme[:css])
-      content = template.render(self, title: title, month: month, day: day, content: html, css: css)
+      content = template.render(self, email_title: @email[:email_title],
+                                      title: @email[:title],
+                                      month: month,
+                                      day: day,
+                                      content: html,
+                                      css: css)
 
       # Create a temporary file with html
       File.open("tmp/input.html", "w") {|f| f.write content }
@@ -173,19 +180,18 @@ module DeliciousLetter
       # Remove temporary file
       File.delete('tmp/input.html')
 
-      email_title = 'Le menu de la semaine'
-      send_email(email_title, html, text)
+      send_email(html, text)
     end
 
 
     ##
     # Send email
     #
-    def send_email(title, html, text)
+    def send_email(html, text)
       Pony.mail({
         :from               => @email[:from_email],
         :to                 => @email[:to_email],
-        :subject            => title,
+        :subject            => @email[:email_title],
         :body               => text,
         :html_body          => html,
         :charset            => 'utf-8',
