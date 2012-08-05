@@ -47,7 +47,7 @@ module DeliciousLetter
         column_text += "# #{board['name']} #\n#{cards_text}\n\n\n"
       end
 
-      html = tpl.render(self, content: column_html)
+      html = tpl.render(self, title: @trello[:title], content: column_html)
       {'text' => column_text, 'html' => html}
     end
   end
