@@ -21,8 +21,8 @@ module DeliciousLetter
       data = @api["/boards/#{@trello[:board]}/lists?cards=open&card_fields=name,due,url&key=#{@trello[:key]}&token=#{@trello[:token]}"].get
       trello = Yajl::Parser.parse(data.body)
 
-      fromdt = DateTime.parse(Chronic.parse('monday', :context => :past).to_s).to_time.to_i
-      todt   = DateTime.parse(Chronic.parse('monday', :context => :future).to_s).to_time.to_i
+      fromdt = DateTime.parse(Chronic.parse(@trello[:fromdt], :context => :past).to_s).to_time.to_i
+      todt   = DateTime.parse(Chronic.parse(@trello[:todt], :context => :future).to_s).to_time.to_i
 
       tpl         = Tilt.new('templates/trello.haml')
       tpl_card    = Tilt.new('templates/trello_card.haml')

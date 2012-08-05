@@ -51,10 +51,10 @@ module DeliciousLetter
     #def fetch_last_bookmarks(fromdt, todt, opts={})
     def fetch_last_bookmarks
       opts = {}
-      fromdt = DateTime.parse(Chronic.parse('monday', :context => :past).to_s)
+      fromdt = DateTime.parse(Chronic.parse(@delicious[:fromdt], :context => :past).to_s)
       fromdt = fromdt.strftime("%Y-%m-%dT%H:%M:%SZ").to_s
 
-      todt   = DateTime.parse(Chronic.parse('monday', :context => :future).to_s)
+      todt   = DateTime.parse(Chronic.parse(@delicious[:todt], :context => :future).to_s)
       todt   = todt.strftime("%Y-%m-%dT%H:%M:%SZ").to_s
       begin
         response = api["/v1/posts/all?fromdt=#{fromdt}&todt=#{todt}"].post opts
