@@ -32,6 +32,7 @@ module DeliciousLetter
       @smtp       = config[:smtp]
       @theme      = config[:theme]
       @trello     = config[:trello]
+      @static     = config[:static]
 
       fetch_last_bookmarks()
     end
@@ -149,14 +150,19 @@ module DeliciousLetter
         msg_html += content_trello['html']
       end
 
-      build_email(msg_text, msg_html)
+			if @static[:activate]	
+				static_page = build_html(msg_html)
+			else
+				static_page = nil
+			end
+      build_email(msg_text, msg_html, static_page)
     end
 
     ##
     # Build email with template
     #
-    def build_email(text, html)
-      template = Tilt.new(@theme[:layout])
+    def build_email(text, html, static_page)
+      template = Tilt.new(@theme[:email_layout])
       d = DateTime.now()
       month = d.strftime('%B').to_s
       day = d.strftime('%d').to_s
@@ -168,7 +174,9 @@ module DeliciousLetter
                                       month: month,
                                       day: day,
                                       content: html,
-                                      css: css)
+                                      css: css,
+																			static_page: static_page,
+																			domain: @static[:domain])
 
       # Create a temporary file with html
       File.open("tmp/input.html", "w") {|f| f.write content }
@@ -182,7 +190,6 @@ module DeliciousLetter
 
       send_email(html, text)
     end
-
 
     ##
     # Send email
@@ -208,6 +215,29 @@ module DeliciousLetter
         }
       })
     end
+
+		##
+		# Build static html page
+		#
+		def build_html(html)
+      template = Tilt.new(@theme[:html_layout])
+      d = DateTime.now()
+      month = d.strftime('%B').to_s
+      day = d.strftime('%d').to_s
+
+      content = template.render(self, title: @email[:title],
+                                      month: month,
+                                      day: day,
+                                      content: html,
+                                      css: @theme[:css],
+																			domain: @static[:domain])
+
+			file_name = "#{d.strftime('%d-%m-%Y')}.html"
+      # Create static html page
+      File.open("tmp/#{file_name}", "w") {|f| f.write content }
+
+			return file_name
+		end
 
     ##
     # Check if title is the best ;)

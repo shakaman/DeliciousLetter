@@ -23,10 +23,15 @@
   :port: 587
 
 :theme:
-  :layout: 'templates/layout.haml'
+  :email_layout: 'templates/email_layout.haml'
+  :html_layout: 'templates/html_layout.haml'
   :css: 'css/theme_1.css'
   :delicious: 'templates/delicious.haml'
   :link_row: 'templates/link_row.haml'
+
+:static:
+  :activate: true
+  :domain: "http://domain.local"
 
 :trello:
   :activate: true
