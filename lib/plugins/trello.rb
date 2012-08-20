@@ -18,11 +18,11 @@ module DeliciousLetter
     end
 
     def get_last_news
-      data = @api["/boards/#{@trello[:board]}/lists?cards=open&card_fields=name,due,url&key=#{@trello[:key]}&token=#{@trello[:token]}"].get
+      data = @api["/boards/#{@trello[:board]}/lists?cards=open&card_fields=name,url&key=#{@trello[:key]}&token=#{@trello[:token]}"].get
       trello = Yajl::Parser.parse(data.body)
 
-      fromdt = DateTime.parse(Chronic.parse(@trello[:fromdt], :context => :past).to_s).to_time.to_i
-      todt   = DateTime.parse(Chronic.parse(@trello[:todt], :context => :future).to_s).to_time.to_i
+      fromdt = DateTime.parse(Chronic.parse(@trello[:fromdt], :context => :past).to_s)
+      fromdt = fromdt.strftime("%Y-%m-%d").to_s
 
       tpl         = Tilt.new('templates/trello.haml')
       tpl_card    = Tilt.new('templates/trello_card.haml')
@@ -34,12 +34,12 @@ module DeliciousLetter
         cards_html, cards_text = ['', '']
 
         board['cards'].each do |card|
-          if card.include?('due')
-            d = DateTime.parse(card['due']).to_time.to_i
-            if fromdt <= d && d <= todt
-              cards_html += tpl_card.render(self, card: card)
-              cards_text += "#{card['name']}:\n#{card['url']}\n\n"
-            end
+          data = @api["/cards/#{card['id']}/actions?fields=data&since=#{fromdt}&key=#{@trello[:key]}&token=#{@trello[:token]}"].get
+          activities = Yajl::Parser.parse(data.body)
+
+          if activities.count > 0
+            cards_html += tpl_card.render(self, card: card, activity: activities.first)
+            cards_text += "#{card['name']}:\n#{card['url']}\n\n"
           end
         end
 

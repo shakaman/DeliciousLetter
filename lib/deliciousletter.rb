@@ -14,6 +14,7 @@ require 'premailer'
 require 'plugins/github'
 require 'plugins/twitter'
 require 'plugins/trello'
+require 'plugins/rss'
 
 module DeliciousLetter
   @@config = nil
@@ -33,6 +34,7 @@ module DeliciousLetter
       @theme      = config[:theme]
       @trello     = config[:trello]
       @static     = config[:static]
+      @rss        = config[:rss]
 
       fetch_last_bookmarks()
     end
@@ -143,6 +145,15 @@ module DeliciousLetter
       template = Tilt.new(@theme[:delicious])
       msg_html = template.render(self, title: @delicious[:title], content: msg_html)
 
+
+      if @rss[:activate]
+        rss = DeliciousLetter::Rss.new
+        content_rss = rss.get_last_posts
+        msg_text += content_rss['text']
+        msg_html += content_rss['html']
+      end
+
+
       if @trello[:activate]
         trello = DeliciousLetter::Trello.new
         content_trello = trello.get_last_news
@@ -150,11 +161,11 @@ module DeliciousLetter
         msg_html += content_trello['html']
       end
 
-			if @static[:activate]	
-				static_page = build_html(msg_html)
-			else
-				static_page = nil
-			end
+      if @static[:activate]
+        static_page = build_html(msg_html)
+      else
+        static_page = nil
+      end
       build_email(msg_text, msg_html, static_page)
     end
 
@@ -175,8 +186,8 @@ module DeliciousLetter
                                       day: day,
                                       content: html,
                                       css: css,
-																			static_page: static_page,
-																			domain: @static[:domain])
+                                      static_page: static_page,
+                                      domain: @static[:domain])
 
       # Create a temporary file with html
       File.open("tmp/input.html", "w") {|f| f.write content }
@@ -216,10 +227,10 @@ module DeliciousLetter
       })
     end
 
-		##
-		# Build static html page
-		#
-		def build_html(html)
+    ##
+    # Build static html page
+    #
+    def build_html(html)
       template = Tilt.new(@theme[:html_layout])
       d = DateTime.now()
       month = d.strftime('%B').to_s
@@ -230,14 +241,14 @@ module DeliciousLetter
                                       day: day,
                                       content: html,
                                       css: @theme[:css],
-																			domain: @static[:domain])
+                                      domain: @static[:domain])
 
-			file_name = "#{d.strftime('%d-%m-%Y')}.html"
+      file_name = "#{d.strftime('%d-%m-%Y')}.html"
       # Create static html page
       File.open("tmp/#{file_name}", "w") {|f| f.write content }
 
-			return file_name
-		end
+      return file_name
+    end
 
     ##
     # Check if title is the best ;)

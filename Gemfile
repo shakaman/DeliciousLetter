@@ -21,3 +21,9 @@ gem 'premailer'
 
 # Mail
 gem 'pony'
+
+# Crontab
+gem 'whenever'
+
+# Feeds
+gem 'feedzirra'

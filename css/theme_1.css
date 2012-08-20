@@ -26,6 +26,10 @@ ul li {  }
 ul li a { color: #56667d; text-decoration: none; }
 ul li a:hover { text-decoration: underline; }
 
+
+ul li.card { margin: 0 0 10px 0; }
+ul li.card a { font-weight: bold; }
+
 .footer { height: 50px; background: #e7eaee; vertical-align: middle; border: 1px solid #b6bec9; text-align: center; }
 .footer p { margin: 0; font: bold 10px/18px Arial; color: #96a2b3; }
 .footer p a { color: #455670; text-decoration: underline; }

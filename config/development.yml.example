@@ -5,7 +5,7 @@
   :password: ''
   :private: false
   :fromdt: 'monday 00:00'
-  :todt: 'monday 00:00'
+  :todt: 'sunday 23:59'
   :title: 'Delicious'
 
 :email:
@@ -43,3 +43,8 @@
   :fromdt: 'monday 00:00'
   :todt: 'monday 00:00'
   :title: 'Board name'
+
+:rss:
+  :activate: true
+  :url: 'http://domain.com/rss'
+  :fromdt: 'monday 00:00'
