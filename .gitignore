@@ -1,4 +1,6 @@
 .rvmrc
 config/development.yml
+config/production.yml
 config/schedule.rb
+config/deploy.rb
 tmp/

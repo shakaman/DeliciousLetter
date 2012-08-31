@@ -18,7 +18,7 @@ require 'plugins/rss'
 
 module DeliciousLetter
   @@config = nil
-  @@env    = 'development'
+  @@env    = ENV['DL_ENV'] || 'development'
 
   class << self
     attr_accessor :config

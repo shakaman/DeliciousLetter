@@ -27,3 +27,7 @@ gem 'whenever'
 
 # Feeds
 gem 'feedzirra'
+
+group :development do
+  gem 'capistrano'
+end
