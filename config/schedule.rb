@@ -19,7 +19,9 @@
 
 # Learn more: http://github.com/javan/whenever
 
-set :output, '/home/shakaman/dev/deliciousletter/tmp/cron_log.log'
+@root_path = File.expand_path('../..', __FILE__)
+
+set :output, "#{@root_path}/tmp/cron_log.log"
 every :sunday, :at => '18:13pm' do
-  command "./home/shakaman/dev/deliciousletter/bin/deliciousletter"
+  command "#{@root_path}/bin/deliciousletter"
 end
