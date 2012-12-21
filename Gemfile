@@ -1,4 +1,4 @@
-source :rubygems
+source "http://rubygems.org"
 
 gem 'pry'
 
@@ -29,5 +29,5 @@ gem 'whenever'
 gem 'feedzirra'
 
 group :development do
-  gem 'capistrano'
+  gem 'capistrano', '~>2.13.5'
 end
