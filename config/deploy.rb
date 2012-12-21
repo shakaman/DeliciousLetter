@@ -5,14 +5,14 @@ require 'whenever/capistrano'
 # Common options
 set :use_sudo,   false
 set :scm,        :git
-set :user,       "monsieurporte"
+set :user,       "delicious"
 set :project,    "DeliciousLetter"
 set :deploy_via, :copy
 set :copy_cache, true
 set :git_shallow_clone, 1
 set :repository, "git://github.com/shakaman/#{project}.git"
-set :application, "192.168.83.15"
-set :deploy_to, "/home/#{user}/#{project}"
+set :application, "192.168.83.12"
+set :deploy_to, "/home/#{user}/"
 b = exists?(:branch) ? branch : 'master'
 set :branch, b
 server "#{user}@#{application}", :app, :web, :db, :primary => true
