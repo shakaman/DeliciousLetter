@@ -24,7 +24,7 @@ default_run_options[:env] ||= {}
 default_run_options[:env]['DL_ENV'] = dl_env
 
 set :default_environment, {
-  'PATH' => "/home/#{user}/.rbenv/shims:/home/#{user}/.rbenv/bin:$PATH"
+  'PATH' => "/home/#{user}/.rbenv/shims:/home/#{user}/.rbenv/bin:/home/#{user}/shared/bundle/ruby/1.9.1/bin:$PATH"
 }
 
 desc 'help'
