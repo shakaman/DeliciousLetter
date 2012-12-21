@@ -19,6 +19,8 @@ server "#{user}@#{application}", :app, :web, :db, :primary => true
 set :keep_releases, 5
 set :dl_env, 'production'
 
+set :whenever_command, 'bundle exec whenever'
+
 default_run_options[:pty] = true # Temporary hack
 default_run_options[:env] ||= {}
 default_run_options[:env]['DL_ENV'] = dl_env
