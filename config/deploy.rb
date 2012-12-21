@@ -23,6 +23,10 @@ default_run_options[:pty] = true # Temporary hack
 default_run_options[:env] ||= {}
 default_run_options[:env]['DL_ENV'] = dl_env
 
+set :default_environment, {
+  'PATH' => "/home/#{user}/.rbenv/shims:/home/#{user}/.rbenv/bin:$PATH"
+}
+
 desc 'help'
 task :help do
   puts <<-eos
