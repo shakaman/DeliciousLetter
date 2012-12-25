@@ -23,5 +23,5 @@
 
 set :output, "#{@root_path}/tmp/cron_log.log"
 every :sunday, :at => '18:13pm' do
-  command "#{@root_path}/bin/deliciousletter"
+  command "bundle exec #{@root_path}/bin/deliciousletter"
 end
