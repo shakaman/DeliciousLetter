@@ -26,7 +26,7 @@ gem 'pony'
 gem 'whenever', '~>0.8'
 
 # Feeds
-#gem 'feedzirra'
+gem 'feedzirra'
 
 group :development do
   gem 'capistrano', '~>2.13.5'
