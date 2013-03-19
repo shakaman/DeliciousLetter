@@ -18,18 +18,14 @@ module DeliciousLetter
     def get_last_posts
       feed = Feedzirra::Feed.fetch_and_parse(@rss[:url])
 
-      fromdt = DateTime.parse(Chronic.parse(@rss[:fromdt], :context => :past).to_s).to_time.to_i
+      fromdt = Chronic.parse(@rss[:fromdt], :context => :past).to_i
 
-      tpl         = Tilt.new('templates/rss.haml')
-      tpl_post    = Tilt.new('templates/rss_post.haml')
-      posts_html, posts_text = ['', '']
+      tpl      = Tilt.new('templates/rss.haml')
+      tpl_post = Tilt.new('templates/rss_post.haml')
 
-      feed.entries.each do |post|
-        if fromdt < post.updated.to_time.to_i
-          posts_html += tpl_post.render(self, post: post)
-          posts_text += "#{post['title']} (by #{post['author']}):\n#{post['links']}\n\n"
-        end
-      end
+      posts = feed.entries.select {|post| fromdt <= post.updated.to_i }
+      posts_html = posts.map {|post| tpl_post.render(self, post: post) }.join
+      posts_text = posts.map {|post| "#{post['title']} (by #{post['author']}):\n#{post['links']}\n" }.join("\n")
 
       html = tpl.render(self, title: @rss[:title], content: posts_html)
       {'text' => posts_text, 'html' => html}
