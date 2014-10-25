@@ -11,7 +11,7 @@ set :deploy_via, :copy
 set :copy_cache, true
 set :git_shallow_clone, 1
 set :repository, "git://github.com/shakaman/#{project}.git"
-set :application, "192.168.83.12"
+set :application, "192.168.83.231"
 set :deploy_to, "/home/#{user}/"
 b = exists?(:branch) ? branch : 'master'
 set :branch, b
