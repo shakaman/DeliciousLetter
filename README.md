@@ -4,7 +4,7 @@
 Simple library to send email with delicious' links of the week.
 
 ## Requirements
- * ruby 1.9.3
+ * ruby 2.1.1
  * delicious account
  * gmail account to send email by smtp
 

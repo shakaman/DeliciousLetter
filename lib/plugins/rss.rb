@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
 
-require 'feedzirra'
+require 'feedjira'
 require 'chronic'
 
 module DeliciousLetter
@@ -16,7 +16,7 @@ module DeliciousLetter
     end
 
     def get_last_posts
-      feed = Feedzirra::Feed.fetch_and_parse(@rss[:url])
+      feed = Feedjira::Feed.fetch_and_parse(@rss[:url])
 
       fromdt = Chronic.parse(@rss[:fromdt], :context => :past).to_i
 
